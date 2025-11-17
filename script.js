@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const sendBtn = document.getElementById("send");
     const resultBlock = document.getElementById("result");
 
-    let answersFile = "answers.xlsx"; // Автоподгрузка
+    let answersFile = "answers.xlsx"; // автоподгрузка
 
     settingsBtn.addEventListener("click", () => settingsDiv.classList.toggle("hidden"));
     themeSelect.addEventListener("change", () => document.body.className = themeSelect.value);
@@ -18,14 +18,17 @@ document.addEventListener("DOMContentLoaded", function() {
     sendBtn.addEventListener("click", async () => {
         const ege = document.getElementById("ege").value.trim();
         const tasks = document.getElementById("tasks").value.trim();
-        if (!ege || !tasks) { resultBlock.textContent = "Заполните все поля"; resultBlock.classList.remove("hidden"); return; }
+        if (!ege || !tasks) { 
+            resultBlock.textContent = "Заполните все поля"; 
+            resultBlock.classList.remove("hidden"); 
+            return; 
+        }
 
         if(tg){
             tg.sendData(JSON.stringify({ege, tasks, answersFile}));
         } else {
-            // Обычный сайт — fetch к серверу
             try {
-                const res = await fetch("/get_answers", {
+                const res = await fetch("https://yourusername.pythonanywhere.com/get_answers", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ege, tasks})
@@ -40,11 +43,3 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 });
-document.addEventListener("DOMContentLoaded", function() {
-    let tg = window.Telegram?.WebApp;
-    if(tg){
-        tg.expand();
-        tg.MainButton.setText("");  // убираем главное системное меню
-    }
-});
-
