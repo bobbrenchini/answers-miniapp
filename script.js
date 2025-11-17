@@ -50,14 +50,9 @@ document.addEventListener("DOMContentLoaded", function() {
                     workbook = null;
                     return;
                 }
-                // Скрываем поле выбора файла и показываем надпись
+                // Поле выбора файла пропадает после загрузки
                 fileInput.style.display = "none";
-                fileLabel.textContent = "Файл успешно загружен!";
-
-                // Надпись пропадает через 2 секунды
-                setTimeout(() => {
-                    fileLabel.classList.add("hidden");
-                }, 2000);
+                fileLabel.style.display = "none";
             } catch(err) {
                 alert("Ошибка при чтении файла. Убедитесь, что это .xls");
                 workbook = null;
