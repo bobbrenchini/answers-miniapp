@@ -5,7 +5,10 @@ const settingsBtn = document.getElementById("settingsBtn");
 const settingsDiv = document.getElementById("settings");
 const themeSelect = document.getElementById("themeSelect");
 const fileInput = document.getElementById("fileInput");
-let answersFile = null; // ссылка на файл Excel
+const sendBtn = document.getElementById("send");
+const resultBlock = document.getElementById("result");
+
+let answersFile = null; // Автоподгрузка
 
 // Показ/скрытие настроек
 settingsBtn.onclick = () => settingsDiv.classList.toggle("hidden");
@@ -15,33 +18,32 @@ themeSelect.onchange = () => {
     document.body.className = themeSelect.value;
 };
 
-// Автоподгрузка файла (по умолчанию)
-answersFile = "answers.xlsx"; // на сервере PythonAnywhere рядом с bot.py
+// Автоподгрузка файла
+answersFile = "answers.xlsx"; // На сервере рядом с bot.py
 
 // Пользователь может выбрать файл вручную
 fileInput.onchange = (e) => {
-    answersFile = e.target.files[0]; // локальный файл
+    answersFile = e.target.files[0]; // Локальный файл
 };
 
-document.getElementById("send").onclick = () => {
-    let ege = document.getElementById("ege").value.trim();
-    let tasks = document.getElementById("tasks").value.trim();
+// Отправка данных в Telegram Bot
+sendBtn.onclick = () => {
+    const ege = document.getElementById("ege").value.trim();
+    const tasks = document.getElementById("tasks").value.trim();
 
     if (!ege || !tasks) {
         showResult("Пожалуйста, заполните все поля.");
         return;
     }
 
-    // Отправляем данные боту
     tg.sendData(JSON.stringify({
         ege: ege,
         tasks: tasks,
-        answersFile: answersFile // путь или объект файла
+        answersFile: answersFile
     }));
 };
 
 function showResult(text) {
-    const block = document.getElementById("result");
-    block.classList.remove("hidden");
-    block.textContent = text;
+    resultBlock.classList.remove("hidden");
+    resultBlock.textContent = text;
 }
