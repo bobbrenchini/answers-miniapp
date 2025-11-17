@@ -40,3 +40,11 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 });
+document.addEventListener("DOMContentLoaded", function() {
+    let tg = window.Telegram?.WebApp;
+    if(tg){
+        tg.expand();
+        tg.MainButton.setText("");  // убираем главное системное меню
+    }
+});
+
