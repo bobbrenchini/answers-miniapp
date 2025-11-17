@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ответы на Задания — mini-app</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 18px; max-width:900px; margin:auto; }
+    .row{display:flex;gap:10px;align-items:center;margin-bottom:8px;}
+    input[type="text"]{flex:1;padding:8px;font-size:14px}
+    button{padding:8px 12px;font-size:14px}
+    textarea{width:100%;height:280px;margin-top:10px;padding:8px;font-size:14px}
+    label{min-width:160px}
+  </style>
+</head>
+<body>
+  <h2>Ответы на Задания — mini-app</h2>
+
+  <div class="row">
+    <label for="file">Файл answers.xlsx</label>
+    <input id="file" type="file" accept=".xls,.xlsx,.csv" />
+    <span id="fileStatus">Файл не загружен</span>
+  </div>
+
+  <div class="row">
+    <label>Номер задания ЕГЭ</label>
+    <input id="egeInput" type="text" placeholder="например: 17" />
+  </div>
+
+  <div class="row">
+    <label>Номера заданий для тренировки</label>
+    <input id="tasksInput" type="text" placeholder="например: 122, 233 13" />
+  </div>
+
+  <div class="row">
+    <button id="btnProcess">Показать ответы</button>
+    <button id="btnClear">Очистить</button>
+  </div>
+
+  <textarea id="out" readonly placeholder="Результаты будут здесь..."></textarea>
+
+  <!-- SheetJS (browser) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <script>
+    // карта названий заданий (пример) — можно расширить
+    const TASK_NAMES = {
+      "1":"Анализ информационных моделей","2":"Таблицы истинности логических выражений",
+      "3":"Поиск и сортировка в базах данных","4":"Кодирование и декодирование данных. Условие Фано",
+      "5":"Анализ алгоритмов для исполнителей","6":"Циклические алгоритмы для Исполнителя",
+      "7":"Кодирование графической и звуковой информации","7-2":"Кодирование звуковой информации",
+      "7-v":"Скорость передачи информации","8":"Комбинаторика","9":"Обработка числовой информации в электронных таблицах",
+      "10":"Поиск слова в текстовом документе","11":"Вычисление количества информации","12":"Машина Тьюринга",
+      "13":"IP адреса и маски","14":"Позиционные системы счисления","15":"Истинность логического выражения",
+      "16":"Вычисление значения рекурсивной функции","17":"Обработка целочисленных данных. Проверка делимости",
+      "18":"Динамическое программирование в электронных таблицах","19-21":"Теория игр","22":"Многопоточные вычисления",
+      "23":"Динамическое программирование (количество программ)","24":"Обработка символьных строк",
+      "25":"Обработка целочисленных данных. Поиск делителей","26":"Обработка данных с помощью сортировки","27":"Кластерный анализ",
+      "27-db":"Устаревший тип на обработку последовательностей"
+    };
+
+    let workbookTable = null;       // parsed table as array of objects
+    let headerColumns = [];         // column labels (strings)
+    const fileInput = document.getElementById('file');
+    const fileStatus = document.getElementById('fileStatus');
+    const out = document.getElementById('out');
+
+    fileInput.addEventListener('change', (e)=>{
+      const f = e.target.files[0];
+      if(!f){ fileStatus.textContent='Файл не выбран'; return; }
+      const reader = new FileReader();
+      reader.onload = (ev)=>{
+        const data = new Uint8Array(ev.target.result);
+        const wb = XLSX.read(data, {type:'array'});
+        // берём первый лист
+        const sheetName = wb.SheetNames[0];
+        const ws = wb.Sheets[sheetName];
+        // получаем в виде массива объектов
+        workbookTable = XLSX.utils.sheet_to_json(ws, {defval: ''});
+        headerColumns = XLSX.utils.sheet_to_json(ws, {header:1})[0].map(c => String(c).trim());
+        fileStatus.textContent = `Файл загружен: ${f.name}`;
+      };
+      reader.readAsArrayBuffer(f);
+    });
+
+    function normalizeList(text){
+      if(!text) return [];
+      text = text.replace(/,/g,' ');
+      return text.split(/\s+/).filter(Boolean);
+    }
+
+    function formatAnswer(a){
+      if(typeof a === 'number'){
+        if(Number.isInteger(a)) return String(a);
+        // если float с .0
+        if(Number.isFinite(a) && Math.abs(a - Math.round(a)) < 1e-9) return String(Math.round(a));
+        return String(a);
+      }
+      // строка, null и т.п.
+      return String(a);
+    }
+
+    document.getElementById('btnProcess').addEventListener('click', ()=>{
+      if(!workbookTable){ alert('Сначала загрузите файл answers.xlsx'); return; }
+      let ege = document.getElementById('egeInput').value.trim();
+      if(!ege){ alert('Введите номер задания ЕГЭ'); return; }
+      // столбцы в headerColumns — первая колонка номера тренировочных заданий
+      // нужно убедиться, что ege есть в headerColumns
+      if(!headerColumns.includes(ege)){
+        out.value = `Ошибка: столбца ${ege} нет в таблице.\nДоступные столбцы: ${headerColumns.slice(1).join(', ')}`;
+        return;
+      }
+      const tasks = normalizeList(document.getElementById('tasksInput').value);
+      if(tasks.length === 0){ alert('Введите номера тренировочных заданий'); return; }
+      // отображаем подпись задания
+      const taskDesc = TASK_NAMES[ege] || '';
+      out.value = `Задание ${ege}${taskDesc ? ' — ' + taskDesc : ''}:\n`;
+      // первая колонка заголовок
+      const rowKeyName = headerColumns[0];
+      for(const t of tasks){
+        const tnum = parseInt(t,10);
+        if(isNaN(tnum)){
+          out.value += `№${t}: неверный номер введённого задания\n`;
+          continue;
+        }
+        // ищем строку с первой колонкой == tnum
+        const row = workbookTable.find(r => {
+          // первая колонка может быть числом или строкой
+          const val = r[rowKeyName];
+          if(val === undefined || val === null) return false;
+          return String(val).trim() === String(tnum);
+        });
+        if(!row){
+          out.value += `№${tnum}: неверный номер введённого задания\n`;
+          continue;
+        }
+        let answer = row[ege];
+        // попытка привести float -> int если нужно
+        if(typeof answer === 'number' && Number.isInteger(answer)) answer = parseInt(answer,10);
+        // иногда SheetJS возвращает строку '32.0' — обработаем это:
+        if(typeof answer === 'string' && /^[0-9]+\.0$/.test(answer.trim())){
+          answer = String(parseInt(parseFloat(answer),10));
+        }
+        out.value += `№${tnum}: ${formatAnswer(answer)}\n`;
+      }
+    });
+
+    document.getElementById('btnClear').addEventListener('click', ()=>{
+      document.getElementById('egeInput').value='';
+      document.getElementById('tasksInput').value='';
+      out.value='';
+    });
+  </script>
+</body>
+</html>
