@@ -1,4 +1,4 @@
-/* Общие стили для страницы */
+/* Общие стили */
 body {
     font-family: Arial, sans-serif;
     background-color: #f2f2f2;
@@ -11,7 +11,7 @@ body {
 header {
     text-align: center;
     padding: 20px;
-    background-color: #333;
+    background-color: #111; /* почти черный */
     color: #fff;
 }
 
@@ -73,7 +73,7 @@ button:hover {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    background-color: #e0e0e0; /* немного темнее */
+    background-color: #fafafa;
 }
 
 /* Скрытые элементы */
