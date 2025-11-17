@@ -1,10 +1,4 @@
 document.addEventListener("DOMContentLoaded", function() {
-    let tg = window.Telegram?.WebApp;
-    if(tg) tg.expand();
-
-    const settingsBtn = document.getElementById("settingsBtn");
-    const settingsDiv = document.getElementById("settings");
-    const themeSelect = document.getElementById("themeSelect");
     const fileInput = document.getElementById("fileInput");
     const sendBtn = document.getElementById("send");
     const resultBlock = document.getElementById("result");
@@ -41,69 +35,66 @@ document.addEventListener("DOMContentLoaded", function() {
         "27-db": "Устаревший тип на обработку последовательностей"
     };
 
-    // Показ/скрытие настроек
-    settingsBtn.addEventListener("click", () => settingsDiv.classList.toggle("hidden"));
-    themeSelect.addEventListener("change", () => document.body.className = themeSelect.value);
-
-    // Чтение выбранного файла Excel
+    // Загрузка файла
     fileInput.addEventListener("change", (e) => {
         const reader = new FileReader();
-        reader.onload = (evt) => {
-            const data = new Uint8Array(evt.target.result);
-            workbook = XLSX.read(data, {type: "array"});
-            alert("Файл успешно загружен!");
+        reader.onload = function(evt) {
+            const data = evt.target.result;
+            try {
+                workbook = XLSX.read(data, { type: "binary" });
+                alert("Файл загружен!");
+            } catch(err) {
+                alert("Ошибка при чтении файла. Убедитесь, что это .xls или .xlsx");
+            }
         };
-        reader.readAsArrayBuffer(e.target.files[0]);
+        reader.readAsBinaryString(e.target.files[0]); // Для xls нужно binary
     });
 
-    // Обработка кнопки "Показать ответы"
+    // Кнопка показать ответы
     sendBtn.addEventListener("click", () => {
         const ege = document.getElementById("ege").value.trim();
         const tasks = document.getElementById("tasks").value.trim();
-    
+
         if(!ege || !tasks){
             resultBlock.textContent = "Заполните все поля и прикрепите файл с ответами.";
             resultBlock.classList.remove("hidden");
             return;
         }
+
         if(!workbook){
             resultBlock.textContent = "Файл с ответами не загружен!";
             resultBlock.classList.remove("hidden");
             return;
         }
-    
+
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         const df = XLSX.utils.sheet_to_json(sheet, {header:1}); // массив массивов
-    
-        // Первый ряд — номера ЕГЭ
-        const header = df[0].map(h => String(h).trim());
-        const firstCol = 0; // первый столбец — номера заданий
-        const taskList = tasks.replace(/,/g,' ').split(/\s+/);
-        const resultArr = [];
-    
-        // Найти индекс столбца с нужным номером ЕГЭ
+
+        const header = df[0].map(h => String(h).trim()); // заголовки — номера ЕГЭ
+        const firstCol = 0; // первый столбец — номер тренировочного задания
+
         const colIdx = header.indexOf(String(ege));
         if(colIdx < 0){
             resultBlock.textContent = `Неверный номер ЕГЭ: ${ege}`;
             resultBlock.classList.remove("hidden");
             return;
         }
-    
+
+        const taskList = tasks.replace(/,/g,' ').split(/\s+/);
+        const resultArr = [];
+
         taskList.forEach(taskNum => {
-            // Найти строку с номером тренировочного задания
-            const row = df.find(r => String(r[firstCol]).trim() === taskNum);
+            const row = df.find(r => String(r[firstCol]).trim() === String(taskNum).trim());
             let answer = row ? row[colIdx] : "неверный номер введённого задания";
-    
-            // Если число — убрать .0
+
             if(typeof answer === "number" && Number.isInteger(answer)) answer = answer.toString();
-    
+
             resultArr.push(`№${taskNum}: ${answer}`);
         });
-    
+
         const taskName = TASK_NAMES[ege] ? ` — ${TASK_NAMES[ege]}` : "";
         resultBlock.textContent = `Задание ${ege}${taskName}:\n` + resultArr.join("\n");
         resultBlock.classList.remove("hidden");
     });
 });
-
