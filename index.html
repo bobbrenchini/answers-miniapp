@@ -1,30 +1,40 @@
-<body>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Ответы на Задания — by @yaLiveHere0</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="light">
 <div class="container">
-
-    <h2 class="title">Ответы на задания ЕГЭ<br>by @yaLiveHere0</h2>
+    <h1 class="title">Ответы на задания ЕГЭ — by @yaLiveHere0</h1>
 
     <div class="card">
-        <label>Номер задания ЕГЭ</label>
+        <label for="ege">Номер задания ЕГЭ</label>
         <input id="ege" type="text" placeholder="Например: 17">
 
-        <label>Номера тренировочных заданий</label>
+        <label for="tasks">Номера тренировочных заданий</label>
         <input id="tasks" type="text" placeholder="Например: 122 223 13">
 
         <button id="send">Показать ответы</button>
         <button id="settingsBtn">Настройки ⚙️</button>
     </div>
 
-    <div id="settings" class="hidden">
-        <label>Тема:</label>
+    <div id="settings" class="hidden card">
+        <label for="themeSelect">Тема:</label>
         <select id="themeSelect">
             <option value="light">Светлая</option>
             <option value="dark">Тёмная</option>
         </select>
 
-        <label>Файл с ответами:</label>
+        <label for="fileInput">Файл с ответами:</label>
         <input type="file" id="fileInput">
         <p>Файл подгружается автоматически по умолчанию.</p>
     </div>
 
-    <div id="result" class="result hidden"></div>
+    <div id="result" class="result card hidden"></div>
 </div>
+
+<script src="script.js"></script>
+</body>
+</html>
