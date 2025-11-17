@@ -52,3 +52,20 @@ button {
 }
 .result { white-space: pre-wrap; font-size: 15px; }
 .hidden { display: none; }
+
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Запрет горизонтальной прокрутки */
+}
+
+.container {
+    max-width: 100%;  /* Вместо 500px */
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+input[type="text"], select, input[type="file"], button {
+    width: 100%;       /* на всю ширину контейнера */
+    box-sizing: border-box;
+}
