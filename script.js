@@ -41,9 +41,11 @@ document.addEventListener("DOMContentLoaded", function() {
         "27-db": "Устаревший тип на обработку последовательностей"
     };
 
+    // Показ/скрытие настроек
     settingsBtn.addEventListener("click", () => settingsDiv.classList.toggle("hidden"));
     themeSelect.addEventListener("change", () => document.body.className = themeSelect.value);
 
+    // Чтение выбранного файла Excel
     fileInput.addEventListener("change", (e) => {
         const reader = new FileReader();
         reader.onload = (evt) => {
@@ -54,6 +56,7 @@ document.addEventListener("DOMContentLoaded", function() {
         reader.readAsArrayBuffer(e.target.files[0]);
     });
 
+    // Обработка кнопки "Показать ответы"
     sendBtn.addEventListener("click", () => {
         const ege = document.getElementById("ege").value.trim();
         const tasks = document.getElementById("tasks").value.trim();
@@ -74,28 +77,28 @@ document.addEventListener("DOMContentLoaded", function() {
         const sheet = workbook.Sheets[sheetName];
         const df = XLSX.utils.sheet_to_json(sheet, {header:1}); // массив массивов
 
-        let header = df[0]; // заголовки — номера EGE
-        let firstCol = 0;   // номер столбца с № задания
+        let header = df[0].map(h => String(h).trim()); // Заголовки как строки
+        let firstCol = 0;   // Первый столбец — номера заданий
         const resultArr = [];
 
         const taskList = tasks.replace(/,/g,' ').split(/\s+/);
 
         taskList.forEach(taskNum => {
-            let row = df.find(r => String(r[firstCol]) == taskNum);
+            let row = df.find(r => String(r[firstCol]).trim() === taskNum);
             let answer;
             if(row){
-                let colIdx = header.indexOf(ege);
+                let colIdx = header.indexOf(String(ege));
                 if(colIdx >= 0) {
                     answer = row[colIdx];
                     if(typeof answer === "number" && Number.isInteger(answer)) answer = answer.toString();
                 } else answer = "неверный номер ЕГЭ";
             } else answer = "неверный номер введённого задания";
 
-            const taskName = TASK_NAMES[ege] ? ` — ${TASK_NAMES[ege]}` : "";
-            resultArr.push(`№${taskNum}: ${answer}${taskName}`);
+            resultArr.push(`№${taskNum}: ${answer}`);
         });
 
-        resultBlock.textContent = `Задание ${ege}:\n` + resultArr.join("\n");
+        const taskName = TASK_NAMES[ege] ? ` — ${TASK_NAMES[ege]}` : "";
+        resultBlock.textContent = `Задание ${ege}${taskName}:\n` + resultArr.join("\n");
         resultBlock.classList.remove("hidden");
     });
 });
