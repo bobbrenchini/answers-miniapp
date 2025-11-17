@@ -1,85 +1,90 @@
-:root {
-    --light-bg: #f4f4f4;
-    --light-text: #111;
-    --light-card: #fff;
-    --light-button: #0088cc;
-
-    --dark-bg: #1e1e1e;
-    --dark-text: #eee;
-    --dark-card: #2e2e2e;
-    --dark-button: #0099ff;
-}
-
-body.light {
-    background: var(--light-bg);
-    color: var(--light-text);
-}
-
-body.light .card { background: var(--light-card); }
-body.light button { background: var(--light-button); color: #fff; }
-
-body.dark {
-    background: var(--dark-bg);
-    color: var(--dark-text);
-}
-
-body.dark .card { background: var(--dark-card); }
-body.dark button { background: var(--dark-button); color: #fff; }
-
+/* Общие стили для страницы */
 body {
     font-family: Arial, sans-serif;
-    margin: 0; padding: 0;
+    background-color: #f2f2f2;
+    color: #222;
+    margin: 0;
+    padding: 0;
 }
 
-.container {
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-h1.title {
+/* Хедер сайта */
+header {
     text-align: center;
-    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #333;
+    color: #fff;
 }
 
-.card {
-    padding: 18px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    margin-bottom: 15px;
+header h1 {
+    margin: 0;
+    font-size: 22px;
 }
 
+header span {
+    font-size: 14px;
+    display: block;
+    margin-top: 5px;
+    color: #ccc;
+}
+
+/* Основная часть */
+main {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Подписи к полям */
 label {
     display: block;
-    margin-top: 10px;
+    margin-bottom: 5px;
     font-weight: bold;
 }
 
-input[type="text"], select, input[type="file"] {
+/* Поля ввода и кнопки */
+input[type="file"], input[type="text"], select, button {
     width: 100%;
     padding: 10px;
-    margin-top: 5px;
-    border-radius: 8px;
+    margin-bottom: 15px;
+    border-radius: 5px;
     border: 1px solid #ccc;
+    font-size: 16px;
     box-sizing: border-box;
 }
 
+/* Кнопка */
 button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
+    background-color: #4CAF50;
+    color: white;
     border: none;
-    border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
 }
 
-.result {
-    white-space: pre-wrap;
-    font-size: 15px;
+button:hover {
+    background-color: #45a049;
 }
 
-.hidden { display: none; }
+/* Блок с результатами */
+#result {
+    white-space: pre-line;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fafafa;
+}
 
-/* Чтобы в Telegram было вертикальное прокручивание и поля на весь экран */
-body, html { overflow-x: hidden; }
+/* Скрытые элементы */
+.hidden {
+    display: none;
+}
+
+/* Адаптивность */
+@media (max-width: 600px) {
+    main {
+        margin: 10px;
+        padding: 15px;
+    }
+}
