@@ -26,18 +26,21 @@ body.dark {
 body.dark .card { background: var(--dark-card); }
 body.dark button { background: var(--dark-button); color: #fff; }
 
-body, html {
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden; /* запрет горизонтальной прокрутки */
-}
-
 body {
     font-family: Arial, sans-serif;
+    margin: 0; padding: 0;
 }
 
-.container { max-width: 100%; padding: 10px; margin: auto; }
-h1.title { text-align: center; margin-bottom: 20px; }
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1.title {
+    text-align: center;
+    margin-bottom: 20px;
+}
 
 .card {
     padding: 18px;
@@ -46,14 +49,37 @@ h1.title { text-align: center; margin-bottom: 20px; }
     margin-bottom: 15px;
 }
 
-label { display: block; margin-top: 10px; font-weight: bold; }
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
 input[type="text"], select, input[type="file"] {
-    width: 100%; padding: 10px; margin-top: 5px;
-    border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box;
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
 }
+
 button {
-    width: 100%; padding: 12px; margin-top: 10px;
-    border: none; border-radius: 8px; cursor: pointer; font-size: 16px;
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
 }
-.result { white-space: pre-wrap; font-size: 15px; }
+
+.result {
+    white-space: pre-wrap;
+    font-size: 15px;
+}
+
 .hidden { display: none; }
+
+/* Чтобы в Telegram было вертикальное прокручивание и поля на весь экран */
+body, html { overflow-x: hidden; }
