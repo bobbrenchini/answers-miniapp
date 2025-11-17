@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const fileInput = document.getElementById("fileInput");
     const sendBtn = document.getElementById("send");
     const resultBlock = document.getElementById("result");
+    const fileLabel = document.getElementById("fileLabel");
     let workbook = null;
 
     const TASK_NAMES = {
@@ -35,6 +36,9 @@ document.addEventListener("DOMContentLoaded", function() {
         "27-db": "Устаревший тип на обработку последовательностей"
     };
 
+    // Настройка типа файлов в input (только .xls)
+    fileInput.setAttribute("accept", ".xls");
+
     // Загрузка файла
     fileInput.addEventListener("change", (e) => {
         const reader = new FileReader();
@@ -42,12 +46,20 @@ document.addEventListener("DOMContentLoaded", function() {
             const data = evt.target.result;
             try {
                 workbook = XLSX.read(data, { type: "binary" });
-                alert("Файл загружен!");
+                if(workbook.SheetNames.length === 0){
+                    alert("Файл пустой или неверного формата!");
+                    workbook = null;
+                    return;
+                }
+                // Скрываем поле выбора файла и показываем надпись
+                fileInput.style.display = "none";
+                fileLabel.textContent = "Файл успешно загружен!";
             } catch(err) {
-                alert("Ошибка при чтении файла. Убедитесь, что это .xls или .xlsx");
+                alert("Ошибка при чтении файла. Убедитесь, что это .xls");
+                workbook = null;
             }
         };
-        reader.readAsBinaryString(e.target.files[0]); // Для xls нужно binary
+        reader.readAsBinaryString(e.target.files[0]);
     });
 
     // Кнопка показать ответы
