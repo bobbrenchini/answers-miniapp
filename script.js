@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function() {
     sendBtn.addEventListener("click", () => {
         const ege = document.getElementById("ege").value.trim();
         const tasks = document.getElementById("tasks").value.trim();
-
+    
         if(!ege || !tasks){
             resultBlock.textContent = "Заполните все поля и прикрепите файл с ответами.";
             resultBlock.classList.remove("hidden");
@@ -71,34 +71,39 @@ document.addEventListener("DOMContentLoaded", function() {
             resultBlock.classList.remove("hidden");
             return;
         }
-
-        // Берем первый лист
+    
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         const df = XLSX.utils.sheet_to_json(sheet, {header:1}); // массив массивов
-
-        let header = df[0].map(h => String(h).trim()); // Заголовки как строки
-        let firstCol = 0;   // Первый столбец — номера заданий
-        const resultArr = [];
-
+    
+        // Первый ряд — номера ЕГЭ
+        const header = df[0].map(h => String(h).trim());
+        const firstCol = 0; // первый столбец — номера заданий
         const taskList = tasks.replace(/,/g,' ').split(/\s+/);
-
+        const resultArr = [];
+    
+        // Найти индекс столбца с нужным номером ЕГЭ
+        const colIdx = header.indexOf(String(ege));
+        if(colIdx < 0){
+            resultBlock.textContent = `Неверный номер ЕГЭ: ${ege}`;
+            resultBlock.classList.remove("hidden");
+            return;
+        }
+    
         taskList.forEach(taskNum => {
-            let row = df.find(r => String(r[firstCol]).trim() === taskNum);
-            let answer;
-            if(row){
-                let colIdx = header.indexOf(String(ege));
-                if(colIdx >= 0) {
-                    answer = row[colIdx];
-                    if(typeof answer === "number" && Number.isInteger(answer)) answer = answer.toString();
-                } else answer = "неверный номер ЕГЭ";
-            } else answer = "неверный номер введённого задания";
-
+            // Найти строку с номером тренировочного задания
+            const row = df.find(r => String(r[firstCol]).trim() === taskNum);
+            let answer = row ? row[colIdx] : "неверный номер введённого задания";
+    
+            // Если число — убрать .0
+            if(typeof answer === "number" && Number.isInteger(answer)) answer = answer.toString();
+    
             resultArr.push(`№${taskNum}: ${answer}`);
         });
-
+    
         const taskName = TASK_NAMES[ege] ? ` — ${TASK_NAMES[ege]}` : "";
         resultBlock.textContent = `Задание ${ege}${taskName}:\n` + resultArr.join("\n");
         resultBlock.classList.remove("hidden");
     });
 });
+
