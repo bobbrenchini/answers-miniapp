@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
-    let tg = window.Telegram.WebApp;
-    tg.expand();
+    let tg = window.Telegram?.WebApp;
+    if(tg) tg.expand();
 
     const settingsBtn = document.getElementById("settingsBtn");
     const settingsDiv = document.getElementById("settings");
@@ -9,43 +9,34 @@ document.addEventListener("DOMContentLoaded", function() {
     const sendBtn = document.getElementById("send");
     const resultBlock = document.getElementById("result");
 
-    let answersFile = null; // Автоподгрузка
+    let answersFile = "answers.xlsx"; // Автоподгрузка
 
-    // Показ/скрытие настроек
     settingsBtn.addEventListener("click", () => settingsDiv.classList.toggle("hidden"));
+    themeSelect.addEventListener("change", () => document.body.className = themeSelect.value);
+    fileInput.addEventListener("change", (e) => { answersFile = e.target.files[0]; });
 
-    // Смена темы
-    themeSelect.addEventListener("change", () => {
-        document.body.className = themeSelect.value;
-    });
-
-    // Автоподгрузка файла
-    answersFile = "answers.xlsx"; // На сервере рядом с bot.py
-
-    // Пользователь может выбрать файл вручную
-    fileInput.addEventListener("change", (e) => {
-        answersFile = e.target.files[0];
-    });
-
-    // Отправка данных в Telegram Bot
-    sendBtn.addEventListener("click", () => {
+    sendBtn.addEventListener("click", async () => {
         const ege = document.getElementById("ege").value.trim();
         const tasks = document.getElementById("tasks").value.trim();
+        if (!ege || !tasks) { resultBlock.textContent = "Заполните все поля"; resultBlock.classList.remove("hidden"); return; }
 
-        if (!ege || !tasks) {
-            showResult("Пожалуйста, заполните все поля.");
-            return;
+        if(tg){
+            tg.sendData(JSON.stringify({ege, tasks, answersFile}));
+        } else {
+            // Обычный сайт — fetch к серверу
+            try {
+                const res = await fetch("/get_answers", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ege, tasks})
+                });
+                const data = await res.json();
+                resultBlock.textContent = data.result || data.error;
+                resultBlock.classList.remove("hidden");
+            } catch(err){
+                resultBlock.textContent = "Ошибка сервера: "+err;
+                resultBlock.classList.remove("hidden");
+            }
         }
-
-        tg.sendData(JSON.stringify({
-            ege: ege,
-            tasks: tasks,
-            answersFile: answersFile
-        }));
     });
-
-    function showResult(text) {
-        resultBlock.classList.remove("hidden");
-        resultBlock.textContent = text;
-    }
 });
