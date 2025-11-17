@@ -36,7 +36,6 @@ document.addEventListener("DOMContentLoaded", function() {
         "27-db": "Устаревший тип на обработку последовательностей"
     };
 
-    // Настройка типа файлов в input (только .xls)
     fileInput.setAttribute("accept", ".xls");
 
     // Загрузка файла
@@ -81,10 +80,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
-        const df = XLSX.utils.sheet_to_json(sheet, {header:1}); // массив массивов
+        const df = XLSX.utils.sheet_to_json(sheet, {header:1});
 
-        const header = df[0].map(h => String(h).trim()); // заголовки — номера ЕГЭ
-        const firstCol = 0; // первый столбец — номер тренировочного задания
+        const header = df[0].map(h => String(h).trim());
+        const firstCol = 0;
 
         const colIdx = header.indexOf(String(ege));
         if(colIdx < 0){
