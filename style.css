@@ -1,38 +1,95 @@
+:root {
+    --light-bg: #f4f4f4;
+    --light-text: #111;
+    --light-card: #fff;
+    --light-button: #0088cc;
+
+    --dark-bg: #1e1e1e;
+    --dark-text: #eee;
+    --dark-card: #2e2e2e;
+    --dark-button: #0099ff;
+}
+
 body.light {
-    --bg-color: #f4f4f4;
-    --text-color: #111;
-    --card-bg: #fff;
-    --button-bg: #0088cc;
-    --button-text: #fff;
+    background: var(--light-bg);
+    color: var(--light-text);
+}
+
+body.light .card {
+    background: var(--light-card);
+}
+
+body.light button {
+    background: var(--light-button);
+    color: #fff;
 }
 
 body.dark {
-    --bg-color: #1e1e1e;
-    --text-color: #eee;
-    --card-bg: #2e2e2e;
-    --button-bg: #0099ff;
-    --button-text: #fff;
+    background: var(--dark-bg);
+    color: var(--dark-text);
+}
+
+body.dark .card {
+    background: var(--dark-card);
+}
+
+body.dark button {
+    background: var(--dark-button);
+    color: #fff;
 }
 
 body {
-    background: var(--bg-color);
-    color: var(--text-color);
     font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 500px;
+    margin: auto;
+}
+
+h1.title {
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 .card {
-    background: var(--card-bg);
     padding: 18px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+input[type="text"], select, input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
 }
 
 button {
-    background: var(--button-bg);
-    color: var(--button-text);
-    border: none;
+    width: 100%;
     padding: 12px;
-    margin-top: 5px;
+    margin-top: 10px;
+    border: none;
     border-radius: 8px;
     cursor: pointer;
+    font-size: 16px;
+}
+
+.result {
+    white-space: pre-wrap;
+    font-size: 15px;
+}
+.hidden {
+    display: none;
 }
