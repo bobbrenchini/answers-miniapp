@@ -1,35 +1,34 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ответы на задания для тренировки К.Ю. Полякова — by @yaLiveHere0</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ответы на задания для тренировки К.Ю. Полякова — by @yaLiveHere0</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <header>
-        <h1>Ответы на задания для тренировки К.Ю. Полякова</h1>
-        <span>— by @yaLiveHere0</span>
-    </header>
+  <header>
+    <h1>Ответы на задания для тренировки К.Ю. Полякова</h1>
+    <span>— by @yaLiveHere0</span>
+  </header>
 
-    <main>
-        <label id="fileLabel" for="fileInput">Прикрепите файл с ответами</label>
-        <input type="file" id="fileInput" accept=".xls">
+  <main>
+    <label id="fileLabel" for="fileInput">Прикрепите файл с ответами</label>
+    <input type="file" id="fileInput" accept=".xls">
 
-        <label for="ege">Номер задания ЕГЭ</label>
-        <input type="text" id="ege" placeholder="Введите номер ЕГЭ">
+    <label for="ege">Номер задания ЕГЭ (группы через "/")</label>
+    <input id="ege" type="text" placeholder="Например: 1/2/5">
 
-        <label for="tasks">Номера заданий для тренировки</label>
-        <input type="text" id="tasks" placeholder="Введите номера через пробел/запятую">
+    <label for="tasks">Номера заданий для тренировки (группы через "/", внутри группы - пробел/запятая)</label>
+    <input id="tasks" type="text" placeholder="Введите номера через пробел/запятую">
 
-        <button id="send">Показать ответы</button>
+    <button id="send">Показать ответы</button>
 
-        <div id="result" class="hidden"></div>
-    </main>
+    <div id="result" class="hidden" aria-live="polite"></div>
+  </main>
 
-    <!-- Подключаем библиотеку XLSX для работы с Excel -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- Подключаем скрипт -->
-    <script src="script.js"></script>
+  <!-- SheetJS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
