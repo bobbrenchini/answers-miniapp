@@ -7,20 +7,35 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
+  <header id="pageHeader" title="Нажмите для переключения режима">
     <h1>Ответы на задания для тренировки К.Ю. Полякова</h1>
     <span>— by @yaLiveHere0</span>
   </header>
 
   <main>
     <label id="fileLabel" for="fileInput">Прикрепите файл с ответами</label>
-    <input type="file" id="fileInput" accept=".xls">
+    <input type="file" id="fileInput" accept=".xls,.xlsx">
 
-    <label for="ege">Номер задания ЕГЭ (группы через "/")</label>
-    <input id="ege" type="text" placeholder="Например: 1/2/5">
+    <!-- Classic mode inputs -->
+    <div id="classicBlock">
+      <label for="ege">Номер задания ЕГЭ (группы через "/")</label>
+      <input id="ege" type="text" placeholder="Например: 1/2/5">
 
-    <label for="tasks">Номера заданий для тренировки (группы через "/", внутри группы - пробел/запятая)</label>
-    <input id="tasks" type="text" placeholder="Введите номера через пробел/запятую">
+      <label for="tasks">Номера заданий для тренировки (группы через "/", внутри группы - пробел/запятая)</label>
+      <input id="tasks" type="text" placeholder="Введите номера через пробел/запятую">
+    </div>
+
+    <!-- Self-study mode inputs (hidden by default) -->
+    <div id="selfBlock" class="hidden">
+      <label for="ege_self">Номер задания ЕГЭ (одно число от 1 до 27)</label>
+      <input id="ege_self" type="text" placeholder="Например: 18">
+
+      <label for="knownAnswer">Известный(ые) часть/части ответа (используйте "?" для неизвестных)</label>
+      <input id="knownAnswer" type="text" placeholder="Примеры: 56   или   56?   или   56 899   или   ?899">
+
+      <label for="rangeInput">Диапазон номеров задач для поиска (например 10-50). Оставьте пустым — искать по всем.</label>
+      <input id="rangeInput" type="text" placeholder="Пример: 10-50">
+    </div>
 
     <button id="send">Показать ответы</button>
 
