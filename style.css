@@ -1,4 +1,4 @@
-/* style.css — минималистичный адаптивный дизайн */
+/* style.css — минималистичный адаптивный дизайн, с кликабельным заголовком */
 :root {
   --bg: #f2f2f2;
   --card: #fff;
@@ -22,9 +22,25 @@ header {
   color:#fff;
   text-align:center;
   padding:20px 12px;
+  cursor: pointer; /* clickable */
+  user-select: none;
 }
 header h1 { margin:0; font-size:20px; }
 header span { display:block; margin-top:6px; color:#ccc; font-size:13px; }
+
+/* a small badge to show current mode (inserted via JS as class on body if needed) */
+header[data-mode="classic"] span::before {
+  content: "Режим: Классический";
+  display:block;
+  font-size:12px;
+  color:#ddd;
+}
+header[data-mode="self"] span::before {
+  content: "Режим: Самостоятельная работа";
+  display:block;
+  font-size:12px;
+  color:#ddd;
+}
 
 main {
   max-width: 700px;
