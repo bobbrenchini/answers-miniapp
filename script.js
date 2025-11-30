@@ -134,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return -1;
   }
 
-  // Classic mode processing (like earlier), with range-group support (e.g., 19-21)
+  // Classic mode processing (like earlier), with restricted range support (only 19-21)
   function processClassic(egeRaw, tasksRaw) {
     if (!workbook) {
       showResult("Файл с ответами не загружен!");
@@ -184,6 +184,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const start = parseInt(rangeMatch[1], 10);
         const end = parseInt(rangeMatch[2], 10);
         if (!isNaN(start) && !isNaN(end) && start <= end) {
+          // Only allow the special range 19-21
+          if (!(start === 19 && end === 21)) {
+            out += `Ошибка: диапазон ${start}-${end} не поддерживается. Поддерживается только диапазон 19-21.\n\n`;
+            continue;
+          }
+
           // check which of these exist as columns in headerRow
           const existingCols = [];
           for (let n = start; n <= end; n++) {
@@ -191,11 +197,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (idx >= 0) existingCols.push({ n, idx });
           }
           if (existingCols.length > 0) {
-            // Use either TASK_NAMES for the range or for the first existing number
+            // Use TASK_NAMES for the range header (19-21)
             const rangeKey = `${start}-${end}`;
-            const rangeName = TASK_NAMES[rangeKey] ? TASK_NAMES[rangeKey] : (TASK_NAMES[String(start)] ? TASK_NAMES[String(start)] : "");
+            const rangeName = TASK_NAMES[rangeKey] ? TASK_NAMES[rangeKey] : "";
             out += `Задания ${start}-${end}${rangeName ? ` — ${rangeName}` : ""}:\n\n`;
-            // For each ege number in the range (only those found in header), output answers
+            // For each ege number in the range (19,20,21), output answers (even if some missing show error)
             for (let n = start; n <= end; n++) {
               const found = existingCols.find(x => x.n === n);
               if (!found) {
@@ -212,6 +218,9 @@ document.addEventListener("DOMContentLoaded", () => {
               out += `\n`;
             }
             // finished handling this group
+            continue;
+          } else {
+            out += `Ошибка: в таблице не найдены столбцы для диапазона ${start}-${end}.\n\n`;
             continue;
           }
         }
