@@ -42,6 +42,9 @@ document.addEventListener("DOMContentLoaded", () => {
     "17": "Обработка целочисленных данных. Проверка делимости",
     "18": "Динамическое программирование в электронных таблицах",
     "19-21": "Теория игр",
+    "19": "Теория игр",
+    "20": "Теория игр",
+    "21": "Теория игр",
     "22": "Многопоточные вычисления",
     "23": "Динамическое программирование (количество программ)",
     "24": "Обработка символьных строк",
@@ -131,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return -1;
   }
 
-  // Classic mode processing (like earlier)
+  // Classic mode processing (like earlier), with range-group support (e.g., 19-21)
   function processClassic(egeRaw, tasksRaw) {
     if (!workbook) {
       showResult("Файл с ответами не загружен!");
@@ -157,20 +160,66 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let i = 0; i < egeGroups.length; i++) {
       const egeLabel = egeGroups[i];
       const taskList = taskGroupsRaw[i].replace(/,/g, ' ').split(/\s+/).map(x => x.trim()).filter(x => x.length > 0);
+
+      // First try direct column lookup
       const colIdx = findColIdx(headerRow, egeLabel);
-      const taskName = TASK_NAMES[egeLabel] ? ` — ${TASK_NAMES[egeLabel]}` : "";
-      if (colIdx < 0) {
-        out += `Задание ${egeLabel}${taskName}:\nОшибка: номер ЕГЭ ${egeLabel} не найден в таблице.\n\n`;
+      const directTaskName = TASK_NAMES[egeLabel] ? ` — ${TASK_NAMES[egeLabel]}` : "";
+
+      if (colIdx >= 0) {
+        // normal single ege number case
+        out += `Задание ${egeLabel}${directTaskName}:\n`;
+        for (const t of taskList) {
+          // find row where firstCol equals t
+          const row = sheetArr.find(r => String(r[firstCol] || "").trim() === String(t).trim());
+          let ans = row ? toStringSafe(row[colIdx]) : "неверный номер введённого задания";
+          out += `№${t}: ${ans}\n`;
+        }
+        out += `\n`;
         continue;
       }
-      out += `Задание ${egeLabel}${taskName}:\n`;
-      for (const t of taskList) {
-        // find row where firstCol equals t
-        const row = sheetArr.find(r => String(r[firstCol] || "").trim() === String(t).trim());
-        let ans = row ? toStringSafe(row[colIdx]) : "неверный номер введённого задания";
-        out += `№${t}: ${ans}\n`;
+
+      // If direct not found, check for range like "19-21"
+      const rangeMatch = egeLabel.match(/^(\d+)\s*-\s*(\d+)$/);
+      if (rangeMatch) {
+        const start = parseInt(rangeMatch[1], 10);
+        const end = parseInt(rangeMatch[2], 10);
+        if (!isNaN(start) && !isNaN(end) && start <= end) {
+          // check which of these exist as columns in headerRow
+          const existingCols = [];
+          for (let n = start; n <= end; n++) {
+            const idx = findColIdx(headerRow, String(n));
+            if (idx >= 0) existingCols.push({ n, idx });
+          }
+          if (existingCols.length > 0) {
+            // Use either TASK_NAMES for the range or for the first existing number
+            const rangeKey = `${start}-${end}`;
+            const rangeName = TASK_NAMES[rangeKey] ? TASK_NAMES[rangeKey] : (TASK_NAMES[String(start)] ? TASK_NAMES[String(start)] : "");
+            out += `Задания ${start}-${end}${rangeName ? ` — ${rangeName}` : ""}:\n\n`;
+            // For each ege number in the range (only those found in header), output answers
+            for (let n = start; n <= end; n++) {
+              const found = existingCols.find(x => x.n === n);
+              if (!found) {
+                out += `Задание ${n}:\nОшибка: номер ЕГЭ ${n} не найден в таблице.\n\n`;
+                continue;
+              }
+              const col = found.idx;
+              out += `Задание ${n}:\n`;
+              for (const t of taskList) {
+                const row = sheetArr.find(r => String(r[firstCol] || "").trim() === String(t).trim());
+                let ans = row ? toStringSafe(row[col]) : "неверный номер введённого задания";
+                out += `№${t}: ${ans}\n`;
+              }
+              out += `\n`;
+            }
+            // finished handling this group
+            continue;
+          }
+        }
       }
-      out += `\n`;
+
+      // If we get here — ege label not found and not a usable range
+      const taskName = TASK_NAMES[egeLabel] ? ` — ${TASK_NAMES[egeLabel]}` : "";
+      out += `Задание ${egeLabel}${taskName}:\nОшибка: номер ЕГЭ ${egeLabel} не найден в таблице.\n\n`;
     }
     showResult(out.trim());
   }
